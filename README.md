@@ -1,13 +1,20 @@
-# Infra kick-start
+# Retail_Analysis_And_Management_Lakehouse
+
+![architect](./static/architect.png)
+
+
+## Infra kick-start
 
 ```
 docker compose up
 ```
 
 
-# Run spark job
+## Run spark job
 
-Bronze, Silver
+Install PySpark Locally follow instruction online
+
+Run a job: 
 
 ```
 /Users/khoaiquin/Storage/spark-3.5.7-bin-hadoop3/bin/spark-submit \
@@ -15,17 +22,9 @@ Bronze, Silver
   bronze_streaming.py
 ```
 
-Gold
-
-```
-/Users/khoaiquin/Storage/spark-3.5.7-bin-hadoop3/bin/spark-submit \
-  --packages io.delta:delta-spark_2.12:3.1.0,org.apache.hadoop:hadoop-aws:3.3.4,com.amazonaws:aws-java-sdk-bundle:1.12.367,org.apache.spark:spark-sql-kafka-0-10_2.12:3.4.3,org.postgresql:postgresql:42.7.3 \
-  ../utils/gold_migrate_to_postgres.py
-```
 
 
-
-# Minio
+## Minio
 
 Install mc client
 
@@ -38,52 +37,40 @@ mc alias set local http://localhost:9000 minio minio123
 Apply this policy to allow a table the ListBucket permission
 
 ```
-mc anonymous set-json ./main/storage/policies/delta-bronze-policy.json local/delta-bronze
+mc anonymous set-json ./main/storage/policies/delta-bronze-policy.json local/bronze
 ```
 
 Check for status
 
 ```
-mc stat local/delta-bronze
+mc stat local/bronze
 ```
 
 List all child
 
 ```
-mc ls local/delta-bronze
+mc ls local/bronze
 ```
 
 
-# Scraper
+## Scraper
 
-Run Reddit Scraper
+Run OLTP reader
 
 ```
-python3 ./reddit_scraper.py \
-  --sites-file ./sites_to_scrape.txt \
-  --kafka-bootstrap localhost:9092\
-  --kafka-topic reddit.bronze\
-  --limit 5 \
-  --max-pages 2 \
-  --sleep-min 4 \
-  --sleep-max 8
+python3 ./ingestion/source_reader.py
 ```
 
-# Kafka
+## Kafka
 
 Monitor Kafka Topic in kafka container.
 
 ```
 /opt/kafka/bin/kafka-console-consumer.sh \
   --bootstrap-server localhost:9092 \
-  --topic reddit.bronze \
+  --topic retail_orders_raw \
   --from-beginning
 ```
-
-# Gold model analysis
-
-Run the spark-jobs/standalone_inference.py first to pre-install the model to local env.
-
 
 # Prometheus
 
@@ -110,24 +97,12 @@ CALL delta.system.register_table(
 ```
 
 
-# Grafana 
-
-Dashboard for Gold
-
-Start server
-
-```
-./sbin/start-thriftserver.sh \
-  --conf spark.sql.extensions=io.delta.sql.DeltaSparkSessionExtension \
-  --conf spark.sql.catalog.spark_catalog=org.apache.spark.sql.delta.catalog.DeltaCatalog \
-  --conf spark.hadoop.fs.s3a.endpoint=http://localhost:9000 \
-  --conf spark.hadoop.fs.s3a.access.key=minio \
-  --conf spark.hadoop.fs.s3a.secret.key=minio123 \
-  --conf spark.hadoop.fs.s3a.path.style.access=true
-```
-
 # Dagster
 
+Install dagster locally:
+
 ```
+uv add dagster dagster-webserver dagster-postgres
+
 dagster dev -m orchestration.retail_pipeline -p 3001
 ```

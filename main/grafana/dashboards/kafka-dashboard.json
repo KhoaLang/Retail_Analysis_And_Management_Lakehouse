@@ -1,0 +1,154 @@
+{
+  "title": "Kafka Streaming Observability",
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "version": 1,
+  "refresh": "10s",
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Messages In / Sec (per topic)",
+      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "rate(kafka_broker_topic_messagesinpersec_total[1m])",
+          "legendFormat": "{{topic}}"
+        }
+      ]
+    },
+
+    {
+      "type": "timeseries",
+      "title": "Bytes In / Out (per topic)",
+      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "rate(kafka_broker_topic_bytesinpersec_total[1m])",
+          "legendFormat": "IN {{topic}}"
+        },
+        {
+          "expr": "rate(kafka_broker_topic_bytesoutpersec_total[1m])",
+          "legendFormat": "OUT {{topic}}"
+        }
+      ]
+    },
+
+    {
+      "type": "timeseries",
+      "title": "Produce Requests / Sec",
+      "gridPos": { "x": 0, "y": 16, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "rate(kafka_producer_totalproducerequestspersec_total[1m])",
+          "legendFormat": "{{topic}}"
+        }
+      ]
+    },
+
+    {
+      "type": "timeseries",
+      "title": "Failed Produce Requests / Sec",
+      "gridPos": { "x": 12, "y": 16, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "rate(kafka_producer_failedproducerequestspersec_total[1m])",
+          "legendFormat": "{{topic}}"
+        }
+      ]
+    },
+
+    {
+      "type": "timeseries",
+      "title": "Kafka Request Latency (ms)",
+      "gridPos": { "x": 0, "y": 24, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "kafka_request_latency_ms",
+          "legendFormat": "{{request}} - {{metric}}"
+        }
+      ]
+    },
+
+    {
+      "type": "stat",
+      "title": "Under Replicated Partitions",
+      "gridPos": { "x": 12, "y": 24, "w": 6, "h": 4 },
+      "targets": [
+        {
+          "expr": "kafka_under_replicated_partitions"
+        }
+      ],
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none"
+      }
+    },
+
+    {
+      "type": "timeseries",
+      "title": "Consumer Lag (Max)",
+      "gridPos": { "x": 0, "y": 8, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "kafka_consumer_records_lag_max",
+          "legendFormat": "{{client_id}}"
+        }
+      ]
+    },
+
+    {
+      "type": "timeseries",
+      "title": "Consumer Lag (by Topic & Partition)",
+      "gridPos": { "x": 12, "y": 8, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "kafka_consumer_records_lag",
+          "legendFormat": "{{client_id}} | {{topic}} | p{{partition}}"
+        }
+      ]
+    },
+
+    {
+      "type": "stat",
+      "title": "Offline Partitions",
+      "gridPos": { "x": 18, "y": 24, "w": 6, "h": 4 },
+      "targets": [
+        {
+          "expr": "kafka_offline_partitions"
+        }
+      ],
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none"
+      }
+    },
+
+    {
+      "type": "timeseries",
+      "title": "JVM Heap Usage",
+      "gridPos": { "x": 0, "y": 32, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "jvm_heap_used_bytes",
+          "legendFormat": "Used"
+        },
+        {
+          "expr": "jvm_heap_max_bytes",
+          "legendFormat": "Max"
+        }
+      ]
+    },
+
+    {
+      "type": "timeseries",
+      "title": "JVM GC Time",
+      "gridPos": { "x": 12, "y": 32, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "rate(jvm_gc_collection_time_ms[1m])",
+          "legendFormat": "{{gc}}"
+        }
+      ]
+    }
+  ]
+}
